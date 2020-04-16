@@ -8,7 +8,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const repositories = [{ id: uuid(), title: 'Desafio Node.js', url: 'http://github.com/...', techs: ["Node.js", "..."], likes: 0 }];
+const repositories = [];
 
 app.get("/repositories", (request, response) => {
   response.json(repositories)
@@ -17,16 +17,14 @@ app.get("/repositories", (request, response) => {
 
 app.post("/repositories", (request, response) => {
   const {title,url,techs} = request.body;
-  const id = uuid();
-  let likes = 0;
-  const repo = {id,title,url,techs,likes}
+  const repo = {id : uuid(),title,url,techs,likes: 0}
   repositories.push(repo)
-  response.json({id});
+  response.json(repo);
 });
 
 app.put("/repositories/:id", (request, response) => {
   const { id } = request.params;
-  const { title,url,techs} = request.body;
+  const {title,url,techs} = request.body;
 
   const repoIndex = repositories.findIndex(repo => repo.id == id);
   
@@ -43,10 +41,9 @@ app.put("/repositories/:id", (request, response) => {
     techs,
     likes
   };
-  console.log(repositories[repoIndex])
   repositories[repoIndex] = repo;
 
-  response.json({repo})
+  response.json(repo)
 });
 
 app.delete("/repositories/:id", (req, res) => {
@@ -70,7 +67,7 @@ app.post("/repositories/:id/like", (request, response) => {
   const repoIndex = repositories.findIndex(repo => repo.id == id);
 
   if(repoIndex < 0){
-    return response.status(404).json({"error": "ID not found."});
+    return response.status(400).json({"error": "ID not found."});
   }
   let {likes} = repositories[repoIndex]
   likes += 1
